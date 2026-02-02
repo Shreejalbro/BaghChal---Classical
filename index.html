@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="BCLogo.png">
+    <link rel="icon" href="BCLogo.png">
     <meta property="og:title"
         content="BaghChal - Classical" />
     <meta property="og:image"
@@ -25,21 +25,15 @@
         rel="stylesheet">
     <style>
         :root {
-            /* Classical Palette */
             --board-size: 320px;
             --step: 80px;
             --bg-color: #e6dcc3;
-            /* Parchment/Cream */
             --wood-dark: #3e2723;
-            /* Deep Brown */
             --wood-light: #5d4037;
             --accent-gold: #bcaaa4;
-            /* Muted Brass */
             --highlight: #d7ccc8;
             --goat-text: #2c3e50;
-            /* Slate Blue for contrast */
             --tiger-text: #c0392b;
-            /* Deep Red */
             --line-color: #3e2723;
         }
         
@@ -51,7 +45,6 @@
         
         body {
             font-family: 'Playfair Display', serif;
-            /* Classical Font */
             background-color: var(--bg-color);
             background-image: radial-gradient(#d7ccc8 1px, transparent 1px);
             background-size: 20px 20px;
@@ -79,7 +72,6 @@
             display: flex;
         }
         
-        /* Card Design - Paper/Parchment Style */
         .menu-card {
             background: #fdfbf7;
             padding: 35px;
@@ -91,7 +83,6 @@
             position: relative;
         }
         
-        /* Decorative Corners */
         .menu-card::after {
             content: "";
             position: absolute;
@@ -111,7 +102,6 @@
             letter-spacing: 1px;
         }
         
-        /* Classical Buttons */
         .menu-btn {
             width: 100%;
             padding: 18px;
@@ -148,7 +138,6 @@
             cursor: default;
         }
         
-        /* HUD & Stats */
         .hud {
             width: var(--board-size);
             padding: 10px;
@@ -221,7 +210,6 @@
             transform: scale(1.1) translateY(-5px);
         }
         
-        /* Move Hints - Subtle Circles */
         .hint {
             width: 16px;
             height: 16px;
@@ -231,7 +219,6 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
         }
         
-        /* Input Fields */
         input[type="text"] {
             background: transparent;
             border: 2px solid var(--wood-dark);
@@ -249,6 +236,16 @@
             color: rgba(62, 39, 35, 0.5);
         }
         
+        #join-error {
+            color: var(--tiger-text);
+            font-size: 0.9rem;
+            font-weight: 900;
+            margin-top: 10px;
+            text-transform: uppercase;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
         /* Overlays */
         #overlay,
         #disconnect-overlay {
@@ -258,7 +255,6 @@
             width: 100%;
             height: 100%;
             background: rgba(230, 220, 195, 0.95);
-            /* Light overlay */
             display: none;
             align-items: center;
             justify-content: center;
@@ -394,6 +390,9 @@
             <input type="text"
                 id="join-id"
                 placeholder="Enter Friend's Code">
+            <div id="join-error">
+                INVALID CODE</div>
+            
             <button
                 class="menu-btn primary"
                 onclick="joinRoom()"
@@ -490,6 +489,10 @@
             document.getElementById(
                     'overlay').classList
                 .remove('show');
+            // Hide error when switching screens
+            document.getElementById(
+                'join-error'
+            ).style.display = 'none';
         }
         
         function initGame(mode, role) {
@@ -663,15 +666,12 @@
                                 c ?
                                 ' selected' :
                                 '');
-                        // UPDATED TIGER EMOJI HERE
                         pDiv.innerText =
                             p === 'T' ?
                             '🐯' : '🐐';
                         node.appendChild(
                             pDiv);
                     }
-                    
-                    // Show hints only for local or active player
                     if (gameMode ===
                         'local' ||
                         turn === myRole
@@ -894,6 +894,13 @@
         
         function setupConn() {
             conn.on('open', () => {
+                document
+                    .getElementById(
+                        'join-error'
+                    ).style
+                    .display =
+                    'none';
+                
                 if (conn.peer >
                     peer.id) {
                     const role =
@@ -941,7 +948,6 @@
                     restartVotes
                         .peer =
                         true;
-                    // UPDATED LOGIC HERE:
                     if (!
                         restartVotes
                         .me) {
@@ -993,6 +999,7 @@
                     .random() * 900000)
                 .toString();
             peer = new Peer(randomID);
+            
             peer.on('open', id => {
                 const display =
                     document
@@ -1002,7 +1009,6 @@
                 display
                     .innerText =
                     id;
-                // Show the "Click to Copy" hint once the ID is ready
                 document
                     .getElementById(
                         'copy-hint'
@@ -1010,11 +1016,25 @@
                     .display =
                     'block';
             });
+            
             peer.on('connection',
                 c => {
                     conn = c;
                     setupConn();
                 });
+            
+            peer.on('error', (err) => {
+                if (err.type ===
+                    'peer-unavailable'
+                ) {
+                    document
+                        .getElementById(
+                            'join-error'
+                        ).style
+                        .display =
+                        'block';
+                }
+            });
         }
         
         function copyRoomID() {
@@ -1029,7 +1049,6 @@
             navigator.clipboard
                 .writeText(id).then(
                     () => {
-                        // Subtle feedback: flash the background color
                         const
                             originalBg =
                             display
@@ -1053,6 +1072,11 @@
                 .getElementById(
                     'join-id').value;
             if (!id) return;
+            
+            document.getElementById(
+                    'join-error').style
+                .display = 'none';
+            
             conn = peer.connect(id);
             setupConn();
         }
@@ -1228,28 +1252,22 @@
                 .resume();
             const now = audioCtx
                 .currentTime;
-            
-            // 1. The "Impact" - High frequency snap
             const osc1 = audioCtx
                 .createOscillator();
             const gain1 = audioCtx
                 .createGain();
-            osc1.type =
-                'triangle'; // Softer than square, punchier than sine
+            osc1.type = 'triangle';
             osc1.frequency
                 .setValueAtTime(150,
                     now);
             osc1.frequency
                 .exponentialRampToValueAtTime(
                     10, now + 0.05);
-            
             gain1.gain.setValueAtTime(
-                0.3, now);
+                1.0, now);
             gain1.gain
                 .exponentialRampToValueAtTime(
                     0.01, now + 0.05);
-            
-            // 2. The "Body" - Low resonance of the wooden board
             const osc2 = audioCtx
                 .createOscillator();
             const gain2 = audioCtx
@@ -1257,15 +1275,12 @@
             osc2.type = 'sine';
             osc2.frequency
                 .setValueAtTime(80,
-                    now);
-            
+                now);
             gain2.gain.setValueAtTime(
-                0.2, now);
+                1.0, now);
             gain2.gain
                 .exponentialRampToValueAtTime(
                     0.01, now + 0.15);
-            
-            // Connect and Play
             osc1.connect(gain1);
             gain1.connect(audioCtx
                 .destination);
@@ -1291,5 +1306,4 @@
         }
     </script>
 </body>
-
 </html>
