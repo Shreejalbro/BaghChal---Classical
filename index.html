@@ -44,7 +44,7 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden; /* Prevents scroll on desktop, handled inside screens for mobile */
+            overflow: hidden;
         }
 
         /* Responsive Container */
@@ -150,8 +150,8 @@
         /* The Board */
         .board-wrapper {
             position: relative;
-            width: calc(var(--board-size) + 40px);
-            height: calc(var(--board-size) + 40px);
+            width: calc(var(--board-size) + 49px);
+            height: calc(var(--board-size) + 49px);
             background: #6d4c41;
             padding: 20px;
             border-radius: 6px;
@@ -193,7 +193,7 @@
         }
 
         .piece {
-            font-size: 2.6rem;
+            font-size: 2.5rem;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
         }
