@@ -13,8 +13,6 @@ let restartVotes = {
 };
 let isIntentionalDisconnect =
   false;
-
-// Chat variables
 let isChatOpen = false;
 
 function showScreen(id) {
@@ -80,7 +78,7 @@ function initGame(mode, role) {
     announcer.classList.add(
       'pulse-text');
     
-    // Show chat in online mode
+  
     chatWrapper.style
       .display = 'flex';
     
@@ -112,7 +110,6 @@ function initGame(mode, role) {
   }
 }
 
-// --- CHAT FUNCTIONS ---
 function toggleChat() {
   const panel = document
     .getElementById(
@@ -199,11 +196,9 @@ function appendMessage(msg,
       .style.display =
       'block';
     playThok
-      (); // reuse sound for notification
+      (); 
   }
 }
-
-// Handle Enter key in chat
 document.getElementById(
     'chat-input')
   .addEventListener(
@@ -495,7 +490,6 @@ function triggerDisconnect() {
   if (gameMode !== 'online')
     return;
   
-  // --- FIX: Close chat if open ---
   if (isChatOpen)
     toggleChat();
   // -------------------------------
@@ -630,7 +624,7 @@ function setupConn() {
         data
         .msg,
         false
-      ); // Handle incoming chat
+      ); 
     if (data
       .type ===
       'restart-vote'
